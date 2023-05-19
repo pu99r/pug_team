@@ -1,6 +1,6 @@
 const readline = require("readline");
 const getQQ = require("./Questions");
-//d
+
 const reader = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
