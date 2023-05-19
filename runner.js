@@ -1,6 +1,5 @@
 const readline = require("readline");
-const fs = require("fs");
-const QuestionClass = require("./Questions");
+const getQQ = require("./Questions");
 
 const reader = readline.createInterface({
   input: process.stdin,
@@ -8,13 +7,13 @@ const reader = readline.createInterface({
 });
 const thems = [
   {
-    them: "car",
+    them: "Мопсы",
   },
   {
-    them: "pugs",
+    them: "Капибаодоры",
   },
   {
-    them: "Harry Potter",
+    them: "---",
   },
 ];
 
@@ -23,46 +22,48 @@ for (let i = 0; i < thems.length; i++) {
 }
 
 reader.question("Выбери тему - ", function (input) {
-  askQuestion(input);
+  if (Number(input) <= thems.length && typeof Number(input) === "number") {
+    console.log("\n");
+    askQuestion(input);
+  } else {
+    console.log("\x1b[41m", "У нас нет такой темы ");
+    reader.close();
+  }
 });
 
 let score = 0;
 let currentQuestion = 0;
-
-const questions = [
-    {
-      question: "Какая столица Франции? ",
-      answer: "Париж",
-    },
-    {
-      question: "Какой год начала Второй мировой войны? ",
-      answer: "1939",
-    },
-    {
-      question: "Сколько планет в Солнечной системе? ",
-      answer: "8",
-    },
-  ];
-
 function askQuestion(theme) {
-  reader.question(questions[currentQuestion].question, (userAnswer) => {
-    if (
-      userAnswer.toLowerCase() ===
-      questions[currentQuestion].answer.toLowerCase()
-    ) {
-      score++;
-      console.log("Правильно!\n");
-    } else {
-      console.log("Неправильно!\n");
+  let questions = getQQ(theme);
+  reader.question(
+    questions[currentQuestion].question +
+      "\n" +
+      `(Вопрос за ${questions[currentQuestion].score})` +
+      "\n",
+    (userAnswer) => {
+      if (
+        userAnswer.toLowerCase() ===
+        questions[currentQuestion].answer.toLowerCase()
+      ) {
+        score += questions[currentQuestion].score;
+        console.log(`Правильно!😉 Ваш счёт ${score}\n`);
+      } else {
+        console.log(
+          `Неправильно!🤬 Ваш счёт ${score}\nПравильный ответ: ${questions[currentQuestion].answer}\n`
+        );
+      }
+      currentQuestion++;
+      if (currentQuestion === questions.length) {
+        console.log(
+          "\x1b[42m",
+          `Ваш счет: ${score}/${
+            (questions.length / 2) * (1 + questions.length) * 100
+          } `
+        );
+        reader.close();
+      } else {
+        askQuestion(theme);
+      }
     }
-
-    currentQuestion++;
-
-    if (currentQuestion === questions.length) {
-      console.log(`Ваш счет: ${score}/${questions.length}`);
-      reader.close();
-    } else {
-      askQuestion(theme);
-    }
-  });
+  );
 }
