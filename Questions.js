@@ -22,5 +22,3 @@ function getQQ(theme) {
   return newmass;
 }
 module.exports = getQQ;
-
-// console.log(getQQ(rgregre));
